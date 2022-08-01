@@ -177,14 +177,14 @@ const Display = ({value}) => (
 const Button = ({onClick,text}) => (
   <button onClick={onClick}>{text}</button>
 )
-
+clg
 const App = () => {
   const[value,setValue] = useState(10)
 
   const setToValue = (newVal) => () => {
     setValue(newVal)
   }
-
+console.log('%cApp.js line:187 object', 'color: #007acc;', object);
 
   return (
   <>
@@ -198,3 +198,4 @@ const App = () => {
 }
 
 export default App;
+
