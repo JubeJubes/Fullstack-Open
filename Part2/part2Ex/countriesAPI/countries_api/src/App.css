@@ -28,15 +28,6 @@
   color: #61dafb;
 }
 
-
-.hide-class {
-  visibility:hidden;
-}
-.show-class {
-  visibility: visible;
-}
-
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

@@ -1,13 +1,14 @@
 import logo from './logo.svg';
 import './App.css';
+import axios from 'axios'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const Filter = ({value, onChange,fPersons})=> (
   <div>
     Search:<Input val ={value} hFn = {onChange}/>
     <div>
-      <Array_display cArray={fPersons} key1="name" key2 ="number"/>
+      <ArrayDisplay cArray={fPersons} key1="name" key2 ="number"/>
     </div>
   </div>
 )
@@ -24,32 +25,42 @@ const Form = ({nName,hChange,nNum,hNumChange,subFn}) => (
 )
 
 const PersonList = ({dArray})=> {
-  console.log(dArray)
-  return <Array_display cArray={dArray} key1="name" key2 ="number"/>
+  return <ArrayDisplay cArray={dArray} key1="name" key2 ="number"/>
 }
 
 const Input = ({val,hFn})=> ( 
   <div><input value={val} onChange={hFn}/></div>
 )
 
-const Array_display = ({cArray,key1,key2}) => (
+const ArrayDisplay = ({cArray,key1,key2}) => (
   <ul>
   {cArray.map((person,i)=> <li key={i+Math.floor(Math.random()*10000)}>{person[key1]} {person[key2]}</li>)}
 </ul>
 )
 
+const Flash = ({dText,staticText}) => { 
+  // className = "show-class"
+// setTimeout(() => {
+  return <p> {dText} {staticText}</p>
+// }, 3000);
+  
+
+}
 
 
-const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '647-232-1234' }
-  ]) 
+const App = ( ) => {
+  const [persons, setPersons] = useState([]) 
   const [fPersons, setfPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [badEntry, setBadEntry] = useState(newName)
   const [searchKey, setSearchKey] = useState('')
+  const [badEntry, setBadEntry] = useState(newName) 
+  const [sText, setSText] = useState('')
 
+  useEffect(()=>{
+    axios.get("http://localhost:3001/persons")
+        .then(res=>{setPersons(res.data)})
+  },[])
   ////////////////////////////// New Name handling
 
   const handleChange = (e)=> {
@@ -69,7 +80,11 @@ const App = () => {
     for (const person of persons){
       if (entry.toUpperCase()===person.name.toUpperCase()) {
         setBadEntry(newName)
-       
+        setSText('already exists in the list')
+        setTimeout(() => {
+          setBadEntry('')
+          setSText('')
+        }, 3000);
         return true
       }
     }
@@ -97,6 +112,8 @@ const App = () => {
       <Form nName={newName} hChange={handleChange} nNum={newNumber} hNumChange={handleNumChange} subFn = {addNumber}/>
       <h2>Numbers</h2>
       <PersonList dArray={persons}/>
+      <Flash dText={badEntry} staticText={sText}/>
+      
       
       
     </div>
