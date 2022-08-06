@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import axios from 'axios'
+import personService from './services/persons'
 
 import { useEffect, useState } from 'react'
 
@@ -24,8 +25,18 @@ const Form = ({nName,hChange,nNum,hNumChange,subFn}) => (
   </div>
 )
 
-const PersonList = ({dArray})=> {
-  return <ArrayDisplay cArray={dArray} key1="name" key2 ="number"/>
+const PersonList = ({dArray,fn})=> {
+  // const personClick = ()=>
+  return  (
+  <ul>
+    {dArray.map((person,i)=> 
+      <li key={person.id}>
+        {person.name} {person.number} 
+        <button onClick={fn(person)}>delete</button>
+      </li>)
+    }
+  </ul>
+  )
 }
 
 const Input = ({val,hFn})=> ( 
@@ -34,17 +45,12 @@ const Input = ({val,hFn})=> (
 
 const ArrayDisplay = ({cArray,key1,key2}) => (
   <ul>
-  {cArray.map((person,i)=> <li key={i+Math.floor(Math.random()*10000)}>{person[key1]} {person[key2]}</li>)}
+  {cArray.map((person)=> <li key={person.id}>{person[key1]} {person[key2]}</li>)}
 </ul>
 )
 
 const Flash = ({dText,staticText}) => { 
-  // className = "show-class"
-// setTimeout(() => {
   return <p> {dText} {staticText}</p>
-// }, 3000);
-  
-
 }
 
 
@@ -58,8 +64,8 @@ const App = ( ) => {
   const [sText, setSText] = useState('')
 
   useEffect(()=>{
-    axios.get("http://localhost:3001/persons")
-        .then(res=>{setPersons(res.data)})
+    personService.getAll()
+                  .then(data=>{setPersons(data)})
   },[])
   ////////////////////////////// New Name handling
 
@@ -69,28 +75,39 @@ const App = ( ) => {
   }
   const addNumber = (e)=> {
     e.preventDefault()
-    if (!isPresent(newName))  {
-      setPersons([...persons,{name:newName,number:newNumber}])
+    if (!isPresent())  {
+      axios.post("http://localhost:3001/persons",{name:newName,number:newNumber})
+            .then(res=>setPersons([...persons,res.data]))
+      
     }
     setNewName('')   
     setNewNumber('')   
 
   }
-  const isPresent = (entry) => {
+  const isPresent = () => {
+    console.log(newName);
     for (const person of persons){
-      if (entry.toUpperCase()===person.name.toUpperCase()) {
-        setBadEntry(newName)
-        setSText('already exists in the list')
-        setTimeout(() => {
-          setBadEntry('')
-          setSText('')
-        }, 3000);
+      if (newName===person.name) {
+        const editPerson = {...person,number:newNumber}
+        console.log("editperson",editPerson);
+        axios.put(`http://localhost:3001/persons/${person.id}`,editPerson)
+            .then((res)=>
+              {
+                 setPersons([...persons.map((p)=>p.name===person.name? res.data : p)])
+              })
         return true
       }
     }
     return false
   }
 
+  const deleteBtn = (person)=>()=> {
+    if (window.confirm(`Do you want to delete ${person.name}`)) {
+      axios.delete(`http://localhost:3001/persons/${person.id}`)
+            .then(()=>setPersons(persons.filter((p)=>p!==person)))
+
+    }         
+  }
 
   ////////////////////////////// New Number input handling
   const handleNumChange = (e)=> {
@@ -111,7 +128,7 @@ const App = ( ) => {
       <h2>Add a new number</h2>
       <Form nName={newName} hChange={handleChange} nNum={newNumber} hNumChange={handleNumChange} subFn = {addNumber}/>
       <h2>Numbers</h2>
-      <PersonList dArray={persons}/>
+      <PersonList dArray={persons} fn={deleteBtn}/>
       <Flash dText={badEntry} staticText={sText}/>
       
       
