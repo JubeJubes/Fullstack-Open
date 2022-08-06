@@ -49,7 +49,7 @@ const Flash =({cObj,cKey})=> {
   
   if (cArray.length===1) {
     
-      //  setShowCtry(cArray[0]) 
+      // showCountry(cArray[0])() 
        return <DisplayCountry cObj={cObj} keyObj={cArray[0]}/>
     
   //  return <DisplayCountry cObj={cObj} keyObj={cArray[0]}/>
@@ -59,8 +59,14 @@ const Flash =({cObj,cKey})=> {
 
 const DisplayCountry = ({cObj,keyObj})=> {
 
+// const renderDisplay = ()=> {
+//   if (keyObj)return <p>helloo</p>
+// else return <p>nothing set yet</p>  
+// }
 
-    if (keyObj){
+// useEffect(renderDisplay,[])
+
+if (keyObj){
       
       const iOne = cObj.filter((index)=>index.name.common.toUpperCase() === keyObj);
       return (
