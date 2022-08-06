@@ -14,21 +14,24 @@ const Input = ({value,onChange}) => {
 const Flash =({cObj,cKey})=> {
   const[showCtry,setShowCtry] = useState('')
   const showCountry = (index)=> ()=>{
-    // setShowCtry(index)
-    // return <DisplayCountry cObj={cObj} keyObj={cArray[0]}/>
-    setShowCtry(index)
+  setShowCtry(index)
+  }
+  
+  useEffect(()=>{
+    setShowCtry('')
+  },[cKey])
+
+  let cArray = cObj.map((ctry)=>ctry.name.common.toUpperCase())
+                    .filter((index)=>index===cKey)
+  if (cArray.length==0) {
+    cArray = cObj.map((ctry)=>ctry.name.common.toUpperCase())
+                  .filter((index)=>index.indexOf(cKey)>-1)
   }
 
-
-  // useEffect(()=> {
-  //   <DisplayCountry cObj={cObj} keyObj={showCtry}/>
-  // },[showCtry])
- 
-  const cArray = cObj.map((ctry)=>ctry.name.common.toUpperCase())
-                    .filter((index)=>index.indexOf(cKey)>-1)
-
-  if (cArray.length >10)  return (<div>Too many matches, specify another filter</div>)
-
+  if (cArray.length >10)  {
+    console.log(cArray);
+    return (<div>Too many matches, specify another filter</div>)
+  }
   if (cArray.length<=10 && cArray.length > 1) {
     return  (
       <div>
@@ -48,26 +51,12 @@ const Flash =({cObj,cKey})=> {
     )}
   
   if (cArray.length===1) {
-    
-      // showCountry(cArray[0])() 
        return <DisplayCountry cObj={cObj} keyObj={cArray[0]}/>
-    
-  //  return <DisplayCountry cObj={cObj} keyObj={cArray[0]}/>
   }
-  
 }
 
 const DisplayCountry = ({cObj,keyObj})=> {
-
-// const renderDisplay = ()=> {
-//   if (keyObj)return <p>helloo</p>
-// else return <p>nothing set yet</p>  
-// }
-
-// useEffect(renderDisplay,[])
-
 if (keyObj){
-      
       const iOne = cObj.filter((index)=>index.name.common.toUpperCase() === keyObj);
       return (
         <div>
@@ -90,16 +79,12 @@ if (keyObj){
 }
 
 const Button = ({onClick})=> (
-  <>
-    <button onClick={onClick}>show</button>
-  </>
+  <><button onClick={onClick}>show</button></>
 )
-
 
 function App() {
   const [country,setCountry] = useState('')
   const [cList,setCList] = useState([])
-  // const[showCtry,setShowCtry] = useState('')
 
   const hChange = ((e)=> {
     e.preventDefault()
@@ -111,12 +96,10 @@ function App() {
           .then(res=>{setCList(res.data)})
   },[])
   
-
   return (
     <>
       <Input value = {country} onChange = {hChange}/>
       <Flash cObj={cList} cKey={country.toUpperCase()}/>
-      {/* <DisplayCountry cObj={cList} keyObj={showCtry}/> */}
     </>
   )
 }
