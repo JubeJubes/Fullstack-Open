@@ -7,6 +7,7 @@ const app = express()
 
 app.use(express.json())
 app.use(cors())
+app.use(express.static('build'))
 
 let notes = [
     {
@@ -30,13 +31,13 @@ let notes = [
   ]
 
 //middleware
-app.use((req,res,next)=>{
-  console.log('Method',req.method);
-  console.log('Path',req.path);
-  console.log('Body',req.body);
-  console.log("-----");
-  next()
-})
+// app.use((req,res,next)=>{
+//   console.log('Method',req.method);
+//   console.log('Path',req.path);
+//   console.log('Body',req.body);
+//   console.log("-----");
+//   next()
+// })
 
 
 //routes
@@ -73,6 +74,6 @@ app.use((req,res)=>{
 })
 
 
-const PORT = process.env.port ||3001
-app.listen(PORT)
-console.log(`rUNNING ON PORT ${PORT}...`);
+app.listen(process.env.PORT || 3001, '0.0.0.0', () => {
+  console.log("Server is running.");
+});
