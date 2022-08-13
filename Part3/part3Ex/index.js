@@ -11,7 +11,7 @@ app.use(express.json())
 
 const customError = require('./components/customError')
 
-const persons = [
+let persons = [
     { 
       "id": 1,
       "name": "Arto Hellas", 
@@ -51,26 +51,28 @@ app.get('/api/persons/:id', (request, response) => {
     else response.status(404).end()
   })
 
-app.post('/api/persons',(req,res,next)=>{
+app.post('/api/persons',(req,res,next)=>{     
   // console.log(res.req.body);
   const {body} = req
   if((body.name) && (body.number)){
     const id = Math.max(...persons.map(p=>p.id))+1
-    const inset = {...body,id:id}
+    const inset = {id,...body}
     persons.push(inset)
-    console.log(persons);
+    console.log("body",body); 
+    console.log("inset",inset);
+    console.log("persons",persons); 
     res.redirect('/api/persons')
   }
   else  next(new customError("Name & number need to be filled in",400))
 })
 
-app.put('/api/persons/:name',(req,res,next)=>{
-  const {name} = req.params
+app.put('/api/persons/:id',(req,res,next)=>{
+  const {id} = req.params
   const {body} = req
   console.log(name);
   if((body.name) && (body.number)){
-    const element = persons.map((p)=>p.name)
-                            .indexOf(name)
+    const element = persons.map((p)=>p.id)
+                            .indexOf(id)
     persons[element] = body
 
      res.redirect(303,'/api/persons')
@@ -79,18 +81,23 @@ app.put('/api/persons/:name',(req,res,next)=>{
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  console.log("id",id);
-  console.log("truth check", id===4);
-  persons = persons.filter(person => person.id !== id)
-  console.log("persons",persons);
+  // const id = Number(request.params.id)
+  // console.log("id",id);
+  // console.log("type of",typeof id);
+  // persons = persons.filter(person => person.id !== id)
+  // console.log("persons",persons);
 
-  response.redirect('/api/notes')
+
+  const id = Number(request.params.id)
+  persons = persons.filter(p => p.id !== id)
+  response.status(204).end()
+
+  // response.redirect('/api/notes')
 })
 
 app.all('*',(req,res,next)=>{
   next(new customError("Resource doesnt exist",404))
-})
+}) 
 
 app.use((err,req,res,next)=>{
   const {status=500} = err

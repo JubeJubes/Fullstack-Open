@@ -6,10 +6,16 @@ return    axios.get(baseUrl)
         .then(res=>res.data)
 }
 
-const create=()=> {
-        return    axios.get(baseUrl)
+const create=(newObj)=> {
+        return    axios.post(baseUrl,newObj)
                 .then(res=>res.data)
         }
 
+const edit=(newObj)=> {
+        return    axios.post(baseUrl,newObj)
+                .then(res=>res.data)
+        }
 
-export default {getAll}
+        
+
+export default {getAll,create}

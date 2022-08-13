@@ -14,12 +14,12 @@ const Filter = ({value, onChange,fPersons})=> (
   </div>
 )
 
-const Form = ({nName,hChange,nNum,hNumChange,subFn}) => (
+const Form = ({nName,hChange,nNum,hNumChange,subFn}) => ( 
   
   <div>
       <form onSubmit={subFn}>
         <Input val ={nName} hFn = {hChange}/>
-        <Input val ={nNum} hFn = {hNumChange}/>
+        <Input val ={nNum} hFn = {hNumChange}/> 
         <div><button type="submit">add</button></div>
       </form>
   </div>
@@ -27,11 +27,11 @@ const Form = ({nName,hChange,nNum,hNumChange,subFn}) => (
 
 const PersonList = ({dArray,fn})=> {
   // const personClick = ()=>
-  return  (
+  return  ( 
   <ul>
-    {dArray.map((person,i)=> 
-      <li key={person.id+Math.random()*100000000}>
-        {person.name} {person.number} 
+    {dArray.map((person)=> 
+      <li key={person.id}>
+        {person.name} {person.number}
         <button onClick={fn(person)}>delete</button>
       </li>)
     }
@@ -77,12 +77,13 @@ const App = ( ) => {
   const addNumber = (e)=> {
     e.preventDefault()
     if (!isPresent())  {
-      axios.post("http://localhost:3001/api/persons",{name:newName,number:newNumber})
-           .then(res=>setPersons([...persons,{name:newName,number:newNumber}]))    
+      personService.create({name:newName,number:newNumber})
+           .then(data=>setPersons(data) ) 
+          //  .then(res=>setPersons([...persons,{name:newName,number:newNumber}]))    
     }
     setNewName('')   
     setNewNumber('')   
-
+    console.log("persons",persons);
   }
   const isPresent = () => {
     // console.log(newName);
@@ -91,7 +92,7 @@ const App = ( ) => {
         const editPerson = {...person,number:newNumber} 
         console.log("editperson",editPerson);
         console.log(person);
-        axios.put(`http://localhost:3001/api/persons/${person.name}`,editPerson)
+        axios.put(`http://localhost:3001/api/persons/${person.id}`,editPerson)
             .then(()=>
               {
                 const copy1 = [...persons.map((p)=>p.name===person.name? editPerson : p)]
@@ -109,7 +110,7 @@ const App = ( ) => {
     console.log(person);
     if (window.confirm(`Do you want to delete ${person.name} & ${person.id}`)) {
       console.log(typeof person.id);
-      axios.delete(`http://localhost:3001/api/persons/${person.id}`)
+      axios.delete(`http://localhost:3001/api/persons/${person.id}`,{data:person})
             .then(()=>setPersons(persons.filter((p)=>p!==person)))
 
     }         
@@ -127,6 +128,7 @@ const App = ( ) => {
     setSearchKey(e.target.value)
     setfPersons(persons.filter((person)=>person.name===e.target.value))
   }
+  
   return (
     <div>
       <h2>Phonebook</h2>
@@ -140,6 +142,7 @@ const App = ( ) => {
       
       
     </div>
+    
   )
 }
 
