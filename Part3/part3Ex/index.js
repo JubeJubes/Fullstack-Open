@@ -47,7 +47,7 @@ app.get('/api/persons/:id', (request, response) => {
     else response.status(404).end()
   })
 
-app.post('/api/notes',(req,res,next)=>{
+app.post('/api/persons',(req,res,next)=>{
   // console.log(res.req.body);
   const {body} = req
   if((body.name) && (body.number)){
