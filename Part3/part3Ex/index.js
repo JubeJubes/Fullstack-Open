@@ -3,6 +3,9 @@ const { json } = require('express')
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const cors = require('cors')
+app.use(cors())
+
 app.use(express.json())
 
 
@@ -37,6 +40,7 @@ morgan.token('body',(req,res)=>{
 app.use(morgan(':method :url :status :body - :response-time ms'))
 
 app.get('/api/persons',(req,res)=>{
+
     res.json(persons)
 })
 
@@ -51,15 +55,37 @@ app.post('/api/persons',(req,res,next)=>{
   // console.log(res.req.body);
   const {body} = req
   if((body.name) && (body.number)){
-    persons.push(body)
+    const id = Math.max(...persons.map(p=>p.id))+1
+    const inset = {...body,id:id}
+    persons.push(inset)
+    console.log(persons);
     res.redirect('/api/persons')
   }
   else  next(new customError("Name & number need to be filled in",400))
 })
+
+app.put('/api/persons/:name',(req,res,next)=>{
+  const {name} = req.params
+  const {body} = req
+  console.log(name);
+  if((body.name) && (body.number)){
+    const element = persons.map((p)=>p.name)
+                            .indexOf(name)
+    persons[element] = body
+
+     res.redirect(303,'/api/persons')
+  }
+  else  next(new customError("Name & number need to be filled in",400))
+})
+
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
+  console.log("id",id);
+  console.log("truth check", id===4);
   persons = persons.filter(person => person.id !== id)
-  response.status(204).end()
+  console.log("persons",persons);
+
+  response.redirect('/api/notes')
 })
 
 app.all('*',(req,res,next)=>{
@@ -72,6 +98,7 @@ app.use((err,req,res,next)=>{
   res.status(status).send({error:err.message})
 
 })
+
 
 
 const PORT =3001

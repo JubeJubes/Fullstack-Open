@@ -30,7 +30,7 @@ const PersonList = ({dArray,fn})=> {
   return  (
   <ul>
     {dArray.map((person,i)=> 
-      <li key={person.id}>
+      <li key={person.id+Math.random()*100000000}>
         {person.name} {person.number} 
         <button onClick={fn(person)}>delete</button>
       </li>)
@@ -66,6 +66,7 @@ const App = ( ) => {
   useEffect(()=>{
     personService.getAll()
                   .then(data=>{setPersons(data)})
+    console.log(persons);
   },[])
   ////////////////////////////// New Name handling
 
@@ -76,34 +77,39 @@ const App = ( ) => {
   const addNumber = (e)=> {
     e.preventDefault()
     if (!isPresent())  {
-      axios.post("http://localhost:3001/persons",{name:newName,number:newNumber})
-            .then(res=>setPersons([...persons,res.data]))
-      
+      axios.post("http://localhost:3001/api/persons",{name:newName,number:newNumber})
+           .then(res=>setPersons([...persons,{name:newName,number:newNumber}]))    
     }
     setNewName('')   
     setNewNumber('')   
 
   }
   const isPresent = () => {
-    console.log(newName);
+    // console.log(newName);
     for (const person of persons){
       if (newName===person.name) {
-        const editPerson = {...person,number:newNumber}
+        const editPerson = {...person,number:newNumber} 
         console.log("editperson",editPerson);
-        axios.put(`http://localhost:3001/persons/${person.id}`,editPerson)
-            .then((res)=>
+        console.log(person);
+        axios.put(`http://localhost:3001/api/persons/${person.name}`,editPerson)
+            .then(()=>
               {
-                 setPersons([...persons.map((p)=>p.name===person.name? res.data : p)])
+                const copy1 = [...persons.map((p)=>p.name===person.name? editPerson : p)]
+                 setPersons(persons.map((p)=>p.name===person.name? editPerson : p))
+                 
               })
         return true
+        
       }
     }
     return false
   }
 
   const deleteBtn = (person)=>()=> {
-    if (window.confirm(`Do you want to delete ${person.name}`)) {
-      axios.delete(`http://localhost:3001/persons/${person.id}`)
+    console.log(person);
+    if (window.confirm(`Do you want to delete ${person.name} & ${person.id}`)) {
+      console.log(typeof person.id);
+      axios.delete(`http://localhost:3001/api/persons/${person.id}`)
             .then(()=>setPersons(persons.filter((p)=>p!==person)))
 
     }         
