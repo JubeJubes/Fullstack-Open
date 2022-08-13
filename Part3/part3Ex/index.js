@@ -69,7 +69,7 @@ app.post('/api/persons',(req,res,next)=>{
 app.put('/api/persons/:id',(req,res,next)=>{
   const {id} = req.params
   const {body} = req
-  console.log(name);
+
   if((body.name) && (body.number)){
     const element = persons.map((p)=>p.id)
                             .indexOf(id)
@@ -81,12 +81,6 @@ app.put('/api/persons/:id',(req,res,next)=>{
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-  // const id = Number(request.params.id)
-  // console.log("id",id);
-  // console.log("type of",typeof id);
-  // persons = persons.filter(person => person.id !== id)
-  // console.log("persons",persons);
-
 
   const id = Number(request.params.id)
   persons = persons.filter(p => p.id !== id)
