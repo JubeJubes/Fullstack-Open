@@ -1,16 +1,19 @@
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
+const url = process.env.DB_URL
 const mongoose = require('mongoose')
 
-if ( process.argv.length<3 ) {
-  console.log('give password as argument')
-  process.exit(1)
-}
+console.log(process.env.DB_URL);
 
-const password = process.argv[2]
+// if ( process.argv.length<3 ) {
+//   console.log('give password as argument')
+//   process.exit(1)
+// }
 
-const url =
-  `mongodb://fullstack:${password}@ds161224.mlab.com:61224/fullstack2019-notes`
+// const password = process.argv[2]
 
-mongoose.connect(url, { useNewUrlParser: true })
+mongoose.connect(url, { useNewUrlParser: false })
 
 const Note = mongoose.model('Note', {
   content: String,
